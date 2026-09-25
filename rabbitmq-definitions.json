@@ -1,0 +1,54 @@
+{
+    "vhosts": [
+        {
+            "name": "cdc"
+        }
+    ],
+    "users": [
+        {
+            "name": "debezium",
+            "password_hash": "WmVkMcM761zrC07MRY+x8Yg4zARwi3zEOiRzb1NPWQezsJmp",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "administrator"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "debezium",
+            "vhost": "cdc",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "cdc",
+            "vhost": "cdc",
+            "type": "topic",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "queues": [
+        {
+            "name": "events",
+            "vhost": "cdc",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "cdc",
+            "vhost": "cdc",
+            "destination": "events",
+            "destination_type": "queue",
+            "routing_key": "cdc.public.events",
+            "arguments": {}
+        }
+    ]
+}

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.pedro.core.domain.*;
@@ -32,7 +33,7 @@ public class CreateUserUseCase {
         this.logger = LoggerFactory.getLogger(CreateUserUseCase.class);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false, isolation = Isolation.SERIALIZABLE)
     public Either<UseCaseError, Void> execute(CreateUserUseCaseInput input) {
         this.logger.info("Creating user with name: {} and email: {}",
                 input.name(), input.email());
