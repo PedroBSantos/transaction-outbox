@@ -1,0 +1,66 @@
+services:
+  users:
+    container_name: users-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - default
+    restart: always
+    environment:
+      - TZ=America/Recife
+    depends_on:
+      - database
+
+  database:
+    image: postgres
+    container_name: postgres
+    command: ["postgres", "-c", "wal_level=logical"]
+    environment:
+      - TZ=America/Recife
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=users
+    volumes:
+      - ./postgres.sql:/docker-entrypoint-initdb.d/postgres.sql:ro
+    ports:
+      - 5432:5432
+    restart: always
+
+  broker:
+    image: rabbitmq:4.3.6-management-alpine
+    container_name: rabbitmq
+    environment:
+      - TZ=America/Recife
+      - RABBITMQ_DEFAULT_VHOST=cdc
+      - RABBITMQ_DEFAULT_PASS=debezium
+      - RABBITMQ_DEFAULT_USER=debezium
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq-definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports:
+      - 5672:5672
+      - 15672:15672
+    restart: always
+
+  cdc:
+    image: debezium/server:2.7.3.Final
+    container_name: debezium
+    environment:
+      - TZ=America/Recife
+      - QUARKUS_LOG_CONSOLE_JSON=false
+    volumes:
+      - ./debezium-server.properties:/debezium/conf/application.properties
+    ports:
+      - 8081:8080
+    restart: always
+    depends_on:
+      - broker
+      - database
+
+networks:
+  default:
+    external: false
+    name: transaction-outbox

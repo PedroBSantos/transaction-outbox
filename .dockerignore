@@ -1,0 +1,13 @@
+**/.git
+**/target
+**/.vscode
+*.sql
+**/.vscode
+**/.diagrams
+README.md
+.gitignore
+.gitattributes
+debezium-server.properties
+postgres.sql
+rabbitmq.conf
+rabbitmq-definitions.json
